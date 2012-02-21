@@ -42,6 +42,7 @@ public class StaticAnalysisModel extends  AbstractTableModel
         for(StaticAnalysisItem.SAErrorType t : types) {
                 errors_.get(t).clear();
         }
+        recalcRowCount();
     }
     
     public String getColumnName(int col) {
@@ -103,7 +104,7 @@ public class StaticAnalysisModel extends  AbstractTableModel
     public void recalcRowCount() {
         rowCount_ = 0;
         for(StaticAnalysisItem.SAErrorType t : types) {
-            if(activated_.get(t))
+            if(activated_.get(t) && errors_.get(t).size()>0)
             {
                 typeRowBegin_.put(t, rowCount_);
                 rowCount_ += errors_.get(t).size();
