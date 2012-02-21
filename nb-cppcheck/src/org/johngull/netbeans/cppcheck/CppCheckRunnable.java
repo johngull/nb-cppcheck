@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import org.openide.ErrorManager;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -47,7 +48,11 @@ public class CppCheckRunnable implements Runnable {
             
             for(AnalizedCodeInfo file : files_) {
                 Runtime rt = Runtime.getRuntime();
-                Process pr = rt.exec("cppcheck  --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id} -I \"../libs\" \"" + file.fullPath() + "\"", (String[])(null), new File(file.projectRoot()));
+                String run = "cppcheck  --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id}";
+                for(String include : file.includes())
+                    run += " -I \"" + include + "\"";
+                run += " \"" + file.fullPath() + "\"";
+                Process pr = rt.exec( run, (String[])(null), new File(file.projectRoot()));
 
                 BufferedReader input = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
 
@@ -60,7 +65,7 @@ public class CppCheckRunnable implements Runnable {
                         model_.addItem(item);
                     }
                 }
-
+                
                 pr.waitFor();
             }
             

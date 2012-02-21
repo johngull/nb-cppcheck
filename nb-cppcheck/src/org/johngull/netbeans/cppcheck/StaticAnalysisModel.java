@@ -64,7 +64,7 @@ public class StaticAnalysisModel extends  AbstractTableModel
     }
     
     public StaticAnalysisItem rowItem(int row) {
-        if(row >= rowCount_)
+        if(row >= rowCount_ || rowCount_<=0)
             return null;
         
         StaticAnalysisItem item = null;
