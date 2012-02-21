@@ -70,18 +70,23 @@ public final class SATopComponent extends TopComponent {
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
         table.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tableMouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                tableMouseExited(evt);
+            }
+        });
+        table.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                tableMouseMoved(evt);
             }
         });
         jScrollPane1.setViewportView(table);
@@ -100,6 +105,25 @@ public final class SATopComponent extends TopComponent {
             }
         }
     }//GEN-LAST:event_tableMouseClicked
+
+    private int lastrow=-1;
+    
+    private void tableMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseExited
+        table.setToolTipText("");
+        lastrow=-1;
+    }//GEN-LAST:event_tableMouseExited
+
+    private void tableMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseMoved
+        // TODO add your handling code here:
+        int r = table.rowAtPoint(evt.getPoint());
+        if(r==lastrow)
+            return;
+        lastrow = r;
+        if(r>-1) 
+            table.setToolTipText(model_.rowItem(r).description());
+        else
+            table.setToolTipText("");
+    }//GEN-LAST:event_tableMouseMoved
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
@@ -130,5 +154,13 @@ public final class SATopComponent extends TopComponent {
     public void addItem(StaticAnalysisItem item) {
         model_.addItem(item);
         //files_.add(new FileObject(item.fullPath()));
+    }
+    
+    public String getToolTipText(MouseEvent e) {
+        int r = table.rowAtPoint(e.getPoint());
+        if(r>-1) 
+            return model_.rowItem(r).description();
+        else
+            return "";
     }
 }
