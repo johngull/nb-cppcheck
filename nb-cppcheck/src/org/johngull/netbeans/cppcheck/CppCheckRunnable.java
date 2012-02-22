@@ -60,8 +60,17 @@ public class CppCheckRunnable implements Runnable {
 
                 while((line=input.readLine()) != null) {
                     String[] ss = line.split("\\<\\|\\|\\>");
+                    int l = 0;
+                    try 
+                    {
+                        l = Integer.parseInt(ss[1]);
+                    }catch(NumberFormatException e)
+                    {
+                        
+                    }
+                    
                     if(ss.length>=4) {
-                        StaticAnalysisItem item = new StaticAnalysisItem(detectType(ss[2]), file.fullPath(), Integer.parseInt(ss[1]), file.fileName(), ss[3]);
+                        StaticAnalysisItem item = new StaticAnalysisItem(detectType(ss[2]), file.fullPath(), l, file.fileName(), ss[3]);
                         model_.addItem(item);
                     }
                 }
