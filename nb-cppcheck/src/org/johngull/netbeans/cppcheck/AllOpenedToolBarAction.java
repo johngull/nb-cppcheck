@@ -31,7 +31,9 @@ public final class AllOpenedToolBarAction implements ActionListener {
         table.requestActive();
         table.model().clear();
         
-        CppCheckRunnable cppcheck = new CppCheckRunnable(NativeFilesCollector.collectFromAllOpened(), table.model());
-        cppcheck.run();
+        Thread t = new Thread(new CppCheckRunnable(NativeFilesCollector.collectFromAllOpened(), table.model()), "cppcheck" );
+        t.start();
+        //CppCheckRunnable cpp = new CppCheckRunnable(NativeFilesCollector.collectFromAllOpened(), table.model());
+        //cpp.run();
     }
 }

@@ -122,7 +122,10 @@ public class StaticAnalysisModel extends  AbstractTableModel
     public void addItem(StaticAnalysisItem item) {
         errors_.get(item.type()).add(item);
         recalcRowCount();
-        fireTableRowsUpdated(typeRowBegin_.get(item.type()), rowCount_-1);
+        //fireTableRowsInserted(rowCount_-1, rowCount_-1);
+        //fireTableRowsUpdated(typeRowBegin_.get(item.type()), rowCount_-1);
+        int pos = typeRowEnd_.get(item.type())-1;
+        fireTableRowsInserted(pos, pos);
     }
     
     private String typeString(StaticAnalysisItem.SAErrorType type) {

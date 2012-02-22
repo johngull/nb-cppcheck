@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import org.openide.ErrorManager;
 import java.util.Vector;
 import javax.swing.JOptionPane;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 
 /**
  *
@@ -44,6 +46,11 @@ public class CppCheckRunnable implements Runnable {
         if(model_==null)
             return;
         
+        ProgressHandle handle = ProgressHandleFactory.createHandle("C/C++ Static analysis (cppcheck)");
+        
+        handle.start(files_.size());
+        int pos=1;
+        
 	try {
             
             for(AnalizedCodeInfo file : files_) {
@@ -76,10 +83,13 @@ public class CppCheckRunnable implements Runnable {
                 }
                 
                 pr.waitFor();
+                handle.progress(pos++);
             }
             
 	} catch (Exception ex) {
             ErrorManager.getDefault().notify(ErrorManager.WARNING, ex);
         }
+        
+        handle.finish();
     }
 }
