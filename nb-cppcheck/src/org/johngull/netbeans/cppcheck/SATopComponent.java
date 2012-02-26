@@ -65,8 +65,16 @@ public final class SATopComponent extends TopComponent {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        errorsBtn = new javax.swing.JToggleButton();
+        warningsBtn = new javax.swing.JToggleButton();
+        portabilityBtn = new javax.swing.JToggleButton();
+        performanceBtn = new javax.swing.JToggleButton();
+        styleBtn = new javax.swing.JToggleButton();
+        informationBtn = new javax.swing.JToggleButton();
+        unusedBtn = new javax.swing.JToggleButton();
 
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
+        setLayout(new java.awt.BorderLayout());
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -91,7 +99,39 @@ public final class SATopComponent extends TopComponent {
         });
         jScrollPane1.setViewportView(table);
 
-        add(jScrollPane1);
+        add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
+
+        org.openide.awt.Mnemonics.setLocalizedText(errorsBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.errorsBtn.text")); // NOI18N
+        errorsBtn.setFocusable(false);
+        jPanel1.add(errorsBtn);
+
+        org.openide.awt.Mnemonics.setLocalizedText(warningsBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.warningsBtn.text")); // NOI18N
+        warningsBtn.setFocusable(false);
+        jPanel1.add(warningsBtn);
+
+        org.openide.awt.Mnemonics.setLocalizedText(portabilityBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.portabilityBtn.text")); // NOI18N
+        portabilityBtn.setFocusable(false);
+        jPanel1.add(portabilityBtn);
+
+        org.openide.awt.Mnemonics.setLocalizedText(performanceBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.performanceBtn.text")); // NOI18N
+        performanceBtn.setFocusable(false);
+        jPanel1.add(performanceBtn);
+
+        org.openide.awt.Mnemonics.setLocalizedText(styleBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.styleBtn.text")); // NOI18N
+        styleBtn.setFocusable(false);
+        jPanel1.add(styleBtn);
+
+        org.openide.awt.Mnemonics.setLocalizedText(informationBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.informationBtn.text")); // NOI18N
+        informationBtn.setFocusable(false);
+        jPanel1.add(informationBtn);
+
+        org.openide.awt.Mnemonics.setLocalizedText(unusedBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.unusedBtn.text")); // NOI18N
+        unusedBtn.setFocusable(false);
+        jPanel1.add(unusedBtn);
+
+        add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
@@ -126,8 +166,16 @@ public final class SATopComponent extends TopComponent {
     }//GEN-LAST:event_tableMouseMoved
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton errorsBtn;
+    private javax.swing.JToggleButton informationBtn;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToggleButton performanceBtn;
+    private javax.swing.JToggleButton portabilityBtn;
+    private javax.swing.JToggleButton styleBtn;
     private javax.swing.JTable table;
+    private javax.swing.JToggleButton unusedBtn;
+    private javax.swing.JToggleButton warningsBtn;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -153,7 +201,7 @@ public final class SATopComponent extends TopComponent {
     
     public void addItem(StaticAnalysisItem item) {
         model_.addItem(item);
-        //files_.add(new FileObject(item.fullPath()));
+
     }
     
     public String getToolTipText(MouseEvent e) {
