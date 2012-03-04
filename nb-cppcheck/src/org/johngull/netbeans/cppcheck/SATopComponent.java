@@ -115,8 +115,10 @@ public final class SATopComponent extends TopComponent {
 
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
 
+        errorsBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/showerrors.png"))); // NOI18N
         errorsBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(errorsBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.errorsBtn.text")); // NOI18N
+        errorsBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.errorsBtn.toolTipText")); // NOI18N
         errorsBtn.setFocusable(false);
         errorsBtn.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -125,8 +127,10 @@ public final class SATopComponent extends TopComponent {
         });
         jPanel1.add(errorsBtn);
 
+        warningsBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/showwarnings.png"))); // NOI18N
         warningsBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(warningsBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.warningsBtn.text")); // NOI18N
+        warningsBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.warningsBtn.toolTipText")); // NOI18N
         warningsBtn.setFocusable(false);
         warningsBtn.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -135,8 +139,10 @@ public final class SATopComponent extends TopComponent {
         });
         jPanel1.add(warningsBtn);
 
+        portabilityBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/applications-system.png"))); // NOI18N
         portabilityBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(portabilityBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.portabilityBtn.text")); // NOI18N
+        portabilityBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.portabilityBtn.toolTipText")); // NOI18N
         portabilityBtn.setFocusable(false);
         portabilityBtn.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -145,8 +151,10 @@ public final class SATopComponent extends TopComponent {
         });
         jPanel1.add(portabilityBtn);
 
+        performanceBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/showperformance.png"))); // NOI18N
         performanceBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(performanceBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.performanceBtn.text")); // NOI18N
+        performanceBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.performanceBtn.toolTipText")); // NOI18N
         performanceBtn.setFocusable(false);
         performanceBtn.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -155,8 +163,10 @@ public final class SATopComponent extends TopComponent {
         });
         jPanel1.add(performanceBtn);
 
+        styleBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/applications-development.png"))); // NOI18N
         styleBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(styleBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.styleBtn.text")); // NOI18N
+        styleBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.styleBtn.toolTipText")); // NOI18N
         styleBtn.setFocusable(false);
         styleBtn.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -165,8 +175,10 @@ public final class SATopComponent extends TopComponent {
         });
         jPanel1.add(styleBtn);
 
+        informationBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/dialog-information.png"))); // NOI18N
         informationBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(informationBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.informationBtn.text")); // NOI18N
+        informationBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.informationBtn.toolTipText")); // NOI18N
         informationBtn.setFocusable(false);
         informationBtn.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -175,8 +187,10 @@ public final class SATopComponent extends TopComponent {
         });
         jPanel1.add(informationBtn);
 
+        unusedBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/dialog-information.png"))); // NOI18N
         unusedBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(unusedBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.unusedBtn.text")); // NOI18N
+        unusedBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.unusedBtn.toolTipText")); // NOI18N
         unusedBtn.setFocusable(false);
         unusedBtn.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
