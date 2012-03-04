@@ -1,6 +1,7 @@
 package org.johngull.netbeans.cppcheck;
 
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -29,13 +30,14 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 preferredID = "SATopComponent")
 @Messages({
     "CTL_SAAction=SA",
-    "CTL_SATopComponent=SA Window",
+    "CTL_SATopComponent=C++ Static Analysis",
     "HINT_SATopComponent=This is a SA window"
 })
 public final class SATopComponent extends TopComponent {
 
     private static SATopComponent single_=null;
     private StaticAnalysisModel model_ = new StaticAnalysisModel();
+    private HashMap<javax.swing.JToggleButton, StaticAnalysisItem.SAErrorType> errorTypeMap_ = new HashMap<javax.swing.JToggleButton, StaticAnalysisItem.SAErrorType>();
     
     private SATopComponent() {
         initComponents();
@@ -43,6 +45,16 @@ public final class SATopComponent extends TopComponent {
         setToolTipText(Bundle.HINT_SATopComponent());
 
         table.setModel(model_);
+        
+        //fill map btn->type. Java has no dynamic properties
+        errorTypeMap_.put(errorsBtn, StaticAnalysisItem.SAErrorType.Error);
+        errorTypeMap_.put(warningsBtn, StaticAnalysisItem.SAErrorType.Warning);
+        errorTypeMap_.put(portabilityBtn, StaticAnalysisItem.SAErrorType.Portability);
+        errorTypeMap_.put(performanceBtn, StaticAnalysisItem.SAErrorType.Performance);
+        errorTypeMap_.put(styleBtn, StaticAnalysisItem.SAErrorType.Style);
+        errorTypeMap_.put(informationBtn, StaticAnalysisItem.SAErrorType.Information);
+        errorTypeMap_.put(unusedBtn, StaticAnalysisItem.SAErrorType.UnusedFunction);
+        
     }
     
     public static SATopComponent getInstance(){
@@ -103,32 +115,74 @@ public final class SATopComponent extends TopComponent {
 
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
 
+        errorsBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(errorsBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.errorsBtn.text")); // NOI18N
         errorsBtn.setFocusable(false);
+        errorsBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
         jPanel1.add(errorsBtn);
 
+        warningsBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(warningsBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.warningsBtn.text")); // NOI18N
         warningsBtn.setFocusable(false);
+        warningsBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
         jPanel1.add(warningsBtn);
 
+        portabilityBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(portabilityBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.portabilityBtn.text")); // NOI18N
         portabilityBtn.setFocusable(false);
+        portabilityBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
         jPanel1.add(portabilityBtn);
 
+        performanceBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(performanceBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.performanceBtn.text")); // NOI18N
         performanceBtn.setFocusable(false);
+        performanceBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
         jPanel1.add(performanceBtn);
 
+        styleBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(styleBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.styleBtn.text")); // NOI18N
         styleBtn.setFocusable(false);
+        styleBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
         jPanel1.add(styleBtn);
 
+        informationBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(informationBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.informationBtn.text")); // NOI18N
         informationBtn.setFocusable(false);
+        informationBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
         jPanel1.add(informationBtn);
 
+        unusedBtn.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(unusedBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.unusedBtn.text")); // NOI18N
         unusedBtn.setFocusable(false);
+        unusedBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
         jPanel1.add(unusedBtn);
 
         add(jPanel1, java.awt.BorderLayout.PAGE_START);
@@ -165,6 +219,13 @@ public final class SATopComponent extends TopComponent {
             table.setToolTipText("");
     }//GEN-LAST:event_tableMouseMoved
 
+    private void btnStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_btnStateChanged
+        javax.swing.JToggleButton btn = (javax.swing.JToggleButton)evt.getSource();
+        if(btn==null)
+            return;
+        model_.enableType(errorTypeMap_.get(btn), btn.isSelected());
+    }//GEN-LAST:event_btnStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton errorsBtn;
     private javax.swing.JToggleButton informationBtn;
@@ -198,7 +259,7 @@ public final class SATopComponent extends TopComponent {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-    
+       
     public void addItem(StaticAnalysisItem item) {
         model_.addItem(item);
 
