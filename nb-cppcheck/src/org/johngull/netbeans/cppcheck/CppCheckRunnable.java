@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import org.openide.ErrorManager;
 import java.util.Vector;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 
@@ -54,6 +55,9 @@ public class CppCheckRunnable implements Runnable {
 	try {
             
             for(AnalizedCodeInfo file : files_) {
+                
+                handle.progress(file.fileName(), pos);
+                
                 Runtime rt = Runtime.getRuntime();
                 String run = "cppcheck  --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id}";
                 for(String include : file.includes())
@@ -82,11 +86,12 @@ public class CppCheckRunnable implements Runnable {
                     }
                 }
                 
-                pr.waitFor();
-                handle.progress(pos++);
+                pos++;
             }
             
 	} catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Exception - " + ex.toString());
             ErrorManager.getDefault().notify(ErrorManager.WARNING, ex);
         }
         
