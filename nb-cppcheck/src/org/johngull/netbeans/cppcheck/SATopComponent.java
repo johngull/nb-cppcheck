@@ -1,7 +1,10 @@
 package org.johngull.netbeans.cppcheck;
 
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JToggleButton;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -33,11 +36,12 @@ preferredID = "SATopComponent")
     "CTL_SATopComponent=C++ Static Analysis",
     "HINT_SATopComponent=This is a SA window"
 })
-public final class SATopComponent extends TopComponent {
+public final class SATopComponent extends TopComponent implements StaticAnalysisModel.CountListener {
 
     private static SATopComponent single_=null;
     private StaticAnalysisModel model_ = new StaticAnalysisModel();
-    private HashMap<javax.swing.JToggleButton, StaticAnalysisItem.SAErrorType> errorTypeMap_ = new HashMap<javax.swing.JToggleButton, StaticAnalysisItem.SAErrorType>();
+    private HashMap<JToggleButton, StaticAnalysisItem.SAErrorType> errorTypeMap_ = new HashMap<JToggleButton, StaticAnalysisItem.SAErrorType>();
+    private HashMap<StaticAnalysisItem.SAErrorType, JToggleButton> errorTypeMapBack_ = new HashMap<StaticAnalysisItem.SAErrorType, JToggleButton>();
     
     private SATopComponent() {
         initComponents();
@@ -46,7 +50,7 @@ public final class SATopComponent extends TopComponent {
 
         table.setModel(model_);
         
-        //fill map btn->type. Java has no dynamic properties
+        //fill maps btn->type, type->btn. Java has no dynamic properties
         errorTypeMap_.put(errorsBtn, StaticAnalysisItem.SAErrorType.Error);
         errorTypeMap_.put(warningsBtn, StaticAnalysisItem.SAErrorType.Warning);
         errorTypeMap_.put(portabilityBtn, StaticAnalysisItem.SAErrorType.Portability);
@@ -54,7 +58,12 @@ public final class SATopComponent extends TopComponent {
         errorTypeMap_.put(styleBtn, StaticAnalysisItem.SAErrorType.Style);
         errorTypeMap_.put(informationBtn, StaticAnalysisItem.SAErrorType.Information);
         errorTypeMap_.put(unusedBtn, StaticAnalysisItem.SAErrorType.UnusedFunction);
+        for(Map.Entry<JToggleButton, StaticAnalysisItem.SAErrorType> el : errorTypeMap_.entrySet()) {
+            errorTypeMapBack_.put(el.getValue(), el.getKey());
+        }
         
+        updateBtns();
+        model_.addCountListener(this);        
     }
     
     public static SATopComponent getInstance(){
@@ -65,7 +74,13 @@ public final class SATopComponent extends TopComponent {
         return single_;
     }
     
-    StaticAnalysisModel model() {return model_;}
+    public StaticAnalysisModel model() {return model_;}
+    
+    private void updateBtns() {
+        for(Map.Entry<JToggleButton, StaticAnalysisItem.SAErrorType> el : errorTypeMap_.entrySet()) {
+            el.getKey().setText(String.valueOf( model_.countByType(el.getValue()) ));
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -222,7 +237,6 @@ public final class SATopComponent extends TopComponent {
     }//GEN-LAST:event_tableMouseExited
 
     private void tableMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseMoved
-        // TODO add your handling code here:
         int r = table.rowAtPoint(evt.getPoint());
         if(r==lastrow)
             return;
@@ -234,7 +248,7 @@ public final class SATopComponent extends TopComponent {
     }//GEN-LAST:event_tableMouseMoved
 
     private void btnStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_btnStateChanged
-        javax.swing.JToggleButton btn = (javax.swing.JToggleButton)evt.getSource();
+        JToggleButton btn = (JToggleButton)evt.getSource();
         if(btn==null)
             return;
         model_.enableType(errorTypeMap_.get(btn), btn.isSelected());
@@ -273,17 +287,16 @@ public final class SATopComponent extends TopComponent {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-       
-    public void addItem(StaticAnalysisItem item) {
-        model_.addItem(item);
-
-    }
-    
+          
     public String getToolTipText(MouseEvent e) {
         int r = table.rowAtPoint(e.getPoint());
         if(r>-1) 
             return model_.rowItem(r).description();
         else
             return "";
+    }
+    
+    public void countChanged(StaticAnalysisItem.SAErrorType type, int count) {
+        errorTypeMapBack_.get(type).setText(String.valueOf(count));
     }
 }
