@@ -1,6 +1,10 @@
 package org.johngull.netbeans.cppcheck;
 
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JToggleButton;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -29,13 +33,15 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 preferredID = "SATopComponent")
 @Messages({
     "CTL_SAAction=SA",
-    "CTL_SATopComponent=SA Window",
+    "CTL_SATopComponent=C++ Static Analysis",
     "HINT_SATopComponent=This is a SA window"
 })
-public final class SATopComponent extends TopComponent {
+public final class SATopComponent extends TopComponent implements StaticAnalysisModel.CountListener {
 
     private static SATopComponent single_=null;
     private StaticAnalysisModel model_ = new StaticAnalysisModel();
+    private HashMap<JToggleButton, StaticAnalysisItem.SAErrorType> errorTypeMap_ = new HashMap<JToggleButton, StaticAnalysisItem.SAErrorType>();
+    private HashMap<StaticAnalysisItem.SAErrorType, JToggleButton> errorTypeMapBack_ = new HashMap<StaticAnalysisItem.SAErrorType, JToggleButton>();
     
     private SATopComponent() {
         initComponents();
@@ -43,6 +49,21 @@ public final class SATopComponent extends TopComponent {
         setToolTipText(Bundle.HINT_SATopComponent());
 
         table.setModel(model_);
+        
+        //fill maps btn->type, type->btn. Java has no dynamic properties
+        errorTypeMap_.put(errorsBtn, StaticAnalysisItem.SAErrorType.Error);
+        errorTypeMap_.put(warningsBtn, StaticAnalysisItem.SAErrorType.Warning);
+        errorTypeMap_.put(portabilityBtn, StaticAnalysisItem.SAErrorType.Portability);
+        errorTypeMap_.put(performanceBtn, StaticAnalysisItem.SAErrorType.Performance);
+        errorTypeMap_.put(styleBtn, StaticAnalysisItem.SAErrorType.Style);
+        errorTypeMap_.put(informationBtn, StaticAnalysisItem.SAErrorType.Information);
+        errorTypeMap_.put(unusedBtn, StaticAnalysisItem.SAErrorType.UnusedFunction);
+        for(Map.Entry<JToggleButton, StaticAnalysisItem.SAErrorType> el : errorTypeMap_.entrySet()) {
+            errorTypeMapBack_.put(el.getValue(), el.getKey());
+        }
+        
+        updateBtns();
+        model_.addCountListener(this);        
     }
     
     public static SATopComponent getInstance(){
@@ -53,7 +74,13 @@ public final class SATopComponent extends TopComponent {
         return single_;
     }
     
-    StaticAnalysisModel model() {return model_;}
+    public StaticAnalysisModel model() {return model_;}
+    
+    private void updateBtns() {
+        for(Map.Entry<JToggleButton, StaticAnalysisItem.SAErrorType> el : errorTypeMap_.entrySet()) {
+            el.getKey().setText(String.valueOf( model_.countByType(el.getValue()) ));
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -65,8 +92,16 @@ public final class SATopComponent extends TopComponent {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        errorsBtn = new javax.swing.JToggleButton();
+        warningsBtn = new javax.swing.JToggleButton();
+        portabilityBtn = new javax.swing.JToggleButton();
+        performanceBtn = new javax.swing.JToggleButton();
+        styleBtn = new javax.swing.JToggleButton();
+        informationBtn = new javax.swing.JToggleButton();
+        unusedBtn = new javax.swing.JToggleButton();
 
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
+        setLayout(new java.awt.BorderLayout());
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -91,7 +126,95 @@ public final class SATopComponent extends TopComponent {
         });
         jScrollPane1.setViewportView(table);
 
-        add(jScrollPane1);
+        add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
+
+        errorsBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/showerrors.png"))); // NOI18N
+        errorsBtn.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(errorsBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.errorsBtn.text")); // NOI18N
+        errorsBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.errorsBtn.toolTipText")); // NOI18N
+        errorsBtn.setFocusable(false);
+        errorsBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
+        jPanel1.add(errorsBtn);
+
+        warningsBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/showwarnings.png"))); // NOI18N
+        warningsBtn.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(warningsBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.warningsBtn.text")); // NOI18N
+        warningsBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.warningsBtn.toolTipText")); // NOI18N
+        warningsBtn.setFocusable(false);
+        warningsBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
+        jPanel1.add(warningsBtn);
+
+        portabilityBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/applications-system.png"))); // NOI18N
+        portabilityBtn.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(portabilityBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.portabilityBtn.text")); // NOI18N
+        portabilityBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.portabilityBtn.toolTipText")); // NOI18N
+        portabilityBtn.setFocusable(false);
+        portabilityBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
+        jPanel1.add(portabilityBtn);
+
+        performanceBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/showperformance.png"))); // NOI18N
+        performanceBtn.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(performanceBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.performanceBtn.text")); // NOI18N
+        performanceBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.performanceBtn.toolTipText")); // NOI18N
+        performanceBtn.setFocusable(false);
+        performanceBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
+        jPanel1.add(performanceBtn);
+
+        styleBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/applications-development.png"))); // NOI18N
+        styleBtn.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(styleBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.styleBtn.text")); // NOI18N
+        styleBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.styleBtn.toolTipText")); // NOI18N
+        styleBtn.setFocusable(false);
+        styleBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
+        jPanel1.add(styleBtn);
+
+        informationBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/dialog-information.png"))); // NOI18N
+        informationBtn.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(informationBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.informationBtn.text")); // NOI18N
+        informationBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.informationBtn.toolTipText")); // NOI18N
+        informationBtn.setFocusable(false);
+        informationBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
+        jPanel1.add(informationBtn);
+
+        unusedBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/johngull/netbeans/cppcheck/dialog-information.png"))); // NOI18N
+        unusedBtn.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(unusedBtn, org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.unusedBtn.text")); // NOI18N
+        unusedBtn.setToolTipText(org.openide.util.NbBundle.getMessage(SATopComponent.class, "SATopComponent.unusedBtn.toolTipText")); // NOI18N
+        unusedBtn.setFocusable(false);
+        unusedBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btnStateChanged(evt);
+            }
+        });
+        jPanel1.add(unusedBtn);
+
+        add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
@@ -114,7 +237,6 @@ public final class SATopComponent extends TopComponent {
     }//GEN-LAST:event_tableMouseExited
 
     private void tableMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseMoved
-        // TODO add your handling code here:
         int r = table.rowAtPoint(evt.getPoint());
         if(r==lastrow)
             return;
@@ -125,9 +247,24 @@ public final class SATopComponent extends TopComponent {
             table.setToolTipText("");
     }//GEN-LAST:event_tableMouseMoved
 
+    private void btnStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_btnStateChanged
+        JToggleButton btn = (JToggleButton)evt.getSource();
+        if(btn==null)
+            return;
+        model_.enableType(errorTypeMap_.get(btn), btn.isSelected());
+    }//GEN-LAST:event_btnStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton errorsBtn;
+    private javax.swing.JToggleButton informationBtn;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToggleButton performanceBtn;
+    private javax.swing.JToggleButton portabilityBtn;
+    private javax.swing.JToggleButton styleBtn;
     private javax.swing.JTable table;
+    private javax.swing.JToggleButton unusedBtn;
+    private javax.swing.JToggleButton warningsBtn;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -150,17 +287,16 @@ public final class SATopComponent extends TopComponent {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-    
-    public void addItem(StaticAnalysisItem item) {
-        model_.addItem(item);
-        //files_.add(new FileObject(item.fullPath()));
-    }
-    
+          
     public String getToolTipText(MouseEvent e) {
         int r = table.rowAtPoint(e.getPoint());
         if(r>-1) 
             return model_.rowItem(r).description();
         else
             return "";
+    }
+    
+    public void countChanged(StaticAnalysisItem.SAErrorType type, int count) {
+        errorTypeMapBack_.get(type).setText(String.valueOf(count));
     }
 }

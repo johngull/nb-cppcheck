@@ -2,6 +2,8 @@ package org.johngull.netbeans.cppcheck;
 
 import java.util.HashMap;
 import java.util.Vector;
+import javax.swing.event.EventListenerList;
+import java.util.EventListener;
 import javax.swing.table.AbstractTableModel;
 import org.johngull.netbeans.cppcheck.StaticAnalysisItem;
 
@@ -17,6 +19,9 @@ public class StaticAnalysisModel extends  AbstractTableModel
     
     private HashMap<StaticAnalysisItem.SAErrorType, Integer> typeRowBegin_ = new HashMap<StaticAnalysisItem.SAErrorType, Integer>();
     private HashMap<StaticAnalysisItem.SAErrorType, Integer> typeRowEnd_ = new HashMap<StaticAnalysisItem.SAErrorType, Integer>();
+    
+    protected EventListenerList listeners_ = new EventListenerList();
+
     
     final static private StaticAnalysisItem.SAErrorType[] types = {
                     StaticAnalysisItem.SAErrorType.Error,
@@ -34,6 +39,24 @@ public class StaticAnalysisModel extends  AbstractTableModel
             {
                 activated_.put(t, Boolean.TRUE);
                 errors_.put(t, new Vector<StaticAnalysisItem>());
+            }
+        }
+    }
+    
+    public interface CountListener extends EventListener {
+        void countChanged(StaticAnalysisItem.SAErrorType type, int count);
+    }
+    
+    public void addCountListener(CountListener listener) {
+        listeners_.add(CountListener.class, listener);
+    }
+    
+    public void fireCountChanged(StaticAnalysisItem.SAErrorType type) {
+        int c = errors_.get(type).size();
+        Object[] listeners = listeners_.getListenerList();
+        for (int i = listeners.length-2; i>=0; i-=2) {
+            if (listeners[i]==CountListener.class) {
+                ((CountListener)listeners[i+1]).countChanged(type, c);
             }
         }
     }
@@ -62,6 +85,10 @@ public class StaticAnalysisModel extends  AbstractTableModel
     }
     public int getColumnCount() { 
         return 3; 
+    }
+    
+    public int countByType(StaticAnalysisItem.SAErrorType type) {
+        return errors_.get(type).size();
     }
     
     public StaticAnalysisItem rowItem(int row) {
@@ -122,10 +149,37 @@ public class StaticAnalysisModel extends  AbstractTableModel
     public void addItem(StaticAnalysisItem item) {
         errors_.get(item.type()).add(item);
         recalcRowCount();
-        //fireTableRowsInserted(rowCount_-1, rowCount_-1);
-        //fireTableRowsUpdated(typeRowBegin_.get(item.type()), rowCount_-1);
         int pos = typeRowEnd_.get(item.type())-1;
-        fireTableRowsInserted(pos, pos);
+        if(pos>0)
+            fireTableRowsInserted(pos, pos);
+        fireCountChanged(item.type());
+    }
+    
+    public void enableType(StaticAnalysisItem.SAErrorType type) {
+        enableType(type, Boolean.TRUE);
+    }
+            
+    public void enableType(StaticAnalysisItem.SAErrorType type, Boolean enabled) {
+        if(activated_.get(type)==enabled)
+            return;
+        
+        //divide because of fire different logic
+        if(!enabled)
+        {
+            int posBegin = typeRowBegin_.get(type);
+            int posEnd = typeRowEnd_.get(type);
+            activated_.put(type, enabled);
+            recalcRowCount();
+            fireTableRowsDeleted(posBegin, posEnd);
+        }
+        else
+        {
+            activated_.put(type, enabled);
+            recalcRowCount();
+            int posBegin = typeRowBegin_.get(type);
+            int posEnd = typeRowEnd_.get(type);
+            fireTableRowsInserted(posBegin, posEnd);
+        }
     }
     
     private String typeString(StaticAnalysisItem.SAErrorType type) {
