@@ -7,8 +7,9 @@ First approach will be with calling [cppcheck](http://cppcheck.sourceforge.net).
 Contributor(s):
 ---------------
 
-Vitaly Bondar
+Vitaly Bondar  
+Vladimir Voskresensky  
 
 
-Anyone welcomed to help me with this project.
-If you have fix or enhancement please push it to the branch 'dev'.
+Anyone welcomed to help me with this project.  
+If you have fix or enhancement please push it to the **branch 'dev'**.
