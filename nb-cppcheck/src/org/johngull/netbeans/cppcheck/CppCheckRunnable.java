@@ -79,8 +79,7 @@ public class CppCheckRunnable implements Runnable {
                     try 
                     {
                         l = Integer.parseInt(ss[1]);
-                    }catch(NumberFormatException e)
-                    {
+                    }catch(NumberFormatException e){
                     }
                     
                         StaticAnalysisItem item = new StaticAnalysisItem(detectType(ss[2]), file.fullPath(), l, file.fileName(), ss[3]);
@@ -90,7 +89,9 @@ public class CppCheckRunnable implements Runnable {
                 pos++;
             }
             
-	} catch (Exception ex) {
+	} catch(java.io.IOException ioex) {
+            JOptionPane.showMessageDialog(null, "cppcheck not found.\nPlease install it.");
+        } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Exception - " + ex.toString());
             ErrorManager.getDefault().notify(ErrorManager.WARNING, ex);
