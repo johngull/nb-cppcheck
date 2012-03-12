@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.openide.filesystems.FileUtil;
 import org.netbeans.modules.cnd.modelutil.CsmUtilities;
-import org.netbeans.modules.cnd.api.model.CsmFile;
 
 /**
  *
@@ -17,6 +16,6 @@ public class SourceOpener {
     }
     
     public static void OpenSourceLine(String fullPath, int line) {
-        CsmUtilities.openSource(CsmUtilities.getCsmFile(FileUtil.toFileObject(new File(fullPath)), false, true), line, 0);
+        CsmUtilities.openSource(FileUtil.toFileObject(new File(fullPath)), line, 0);
     }
 }
