@@ -59,7 +59,7 @@ public class CppCheckRunnable implements Runnable {
                 handle.progress(file.fileName(), pos);
                 
                 Runtime rt = Runtime.getRuntime();
-                String run = "cppcheck  --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id}";
+                String run = "cppcheck --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id}";
                 for(String include : file.includes())
                     run += " -I \"" + include + "\"";
                 run += " \"" + file.fullPath() + "\"";
