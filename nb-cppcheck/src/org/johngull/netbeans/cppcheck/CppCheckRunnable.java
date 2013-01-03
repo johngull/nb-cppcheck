@@ -59,7 +59,7 @@ public class CppCheckRunnable implements Runnable {
                 handle.progress(file.fileName(), pos);
                 
                 Runtime rt = Runtime.getRuntime();
-                String run = "cppcheck  --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id}";
+                String run = "cppcheck --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id}";
                 for(String include : file.includes())
                     run += " -I \"" + include + "\"";
                 run += " \"" + file.fullPath() + "\"";
@@ -71,25 +71,27 @@ public class CppCheckRunnable implements Runnable {
 
                 while((line=input.readLine()) != null) {
                     String[] ss = line.split("\\<\\|\\|\\>");
+                    
+                    if(ss.length<4)
+                        continue;
+                    
                     int l = 0;
                     try 
                     {
                         l = Integer.parseInt(ss[1]);
-                    }catch(NumberFormatException e)
-                    {
-                        
+                    }catch(NumberFormatException e){
                     }
                     
-                    if(ss.length>=4) {
                         StaticAnalysisItem item = new StaticAnalysisItem(detectType(ss[2]), file.fullPath(), l, file.fileName(), ss[3]);
                         model_.addItem(item);
-                    }
                 }
                 
                 pos++;
             }
             
-	} catch (Exception ex) {
+	} catch(java.io.IOException ioex) {
+            JOptionPane.showMessageDialog(null, "cppcheck not found.\nPlease install it.");
+        } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Exception - " + ex.toString());
             ErrorManager.getDefault().notify(ErrorManager.WARNING, ex);

@@ -163,6 +163,10 @@ public class StaticAnalysisModel extends  AbstractTableModel
         if(activated_.get(type)==enabled)
             return;
         
+        //no such type
+        if(typeRowBegin_.get(type)==null || typeRowEnd_.get(type)==null)
+            return;
+        
         //divide because of fire different logic
         if(!enabled)
         {
