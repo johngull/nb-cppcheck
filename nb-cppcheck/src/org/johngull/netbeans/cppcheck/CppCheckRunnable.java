@@ -5,10 +5,13 @@ import java.io.File;
 import java.io.InputStreamReader;
 import org.openide.ErrorManager;
 import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
+
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -59,12 +62,14 @@ public class CppCheckRunnable implements Runnable {
                 handle.progress(file.fileName(), pos);
                 
                 Runtime rt = Runtime.getRuntime();
-                String run = "cppcheck --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id}";
+                
+                String run = NbPreferences.forModule(CppCheckOptionsPanel.class).get("cppcheckPath", "cppcheck");
+                run += " --enable=all --template {file}<||>{line}<||>{severity}<||>{message}<||>{id}";
                 for(String include : file.includes())
                     run += " -I \"" + include + "\"";
                 run += " \"" + file.fullPath() + "\"";
                 Process pr = rt.exec( run, (String[])(null), new File(file.projectRoot()));
-
+                
                 BufferedReader input = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
 
                 String line=null;
@@ -90,7 +95,7 @@ public class CppCheckRunnable implements Runnable {
             }
             
 	} catch(java.io.IOException ioex) {
-            JOptionPane.showMessageDialog(null, "cppcheck not found.\nPlease install it.");
+            JOptionPane.showMessageDialog(null, "cppcheck not found.\nPlease install it or reconfigure path in Miscellaneous->cppcheck.");
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Exception - " + ex.toString());
